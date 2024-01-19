@@ -1,23 +1,23 @@
 {
-            users: [{
-                name: "Tom",
-                age: 20,
-                gender: 1,
-                score: 78
+            "users": [{
+                "name": "Melbourne",
+                "temperature": 20,
+                "humidity": 1,
+                "weather": 78
             },{
-                name: "Rose",
-                age: 18,
-                gender: 2,
-                score: 86
+                "name": "Sydney",
+                "temperature": 18,
+                "gender": 2,
+                "weather": 86
             },{
-                name: "Jerry",
-                age: 26,
-                gender: 1,
-                score: 90
+                "name": "Brisbane",
+                "temperature": 26,
+                "humidity": 1,
+                "weather": 90
             },{
-                name: "Tony",
-                age: 30,
-                gender: 1,
-                score: 52
+                "name": "Canberra",
+                "temperature": 30,
+                "humidity": 1,
+                "weather": 52
             }]
         }
