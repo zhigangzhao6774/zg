@@ -1,23 +1,27 @@
 {
             "users": [{
                 "name": "Melbourne",
-                "temperature": 20,
-                "humidity": 1,
-                "weather": 78
+                "temperature": 25,
+                "humidity": 20%,
+                "weather": cloudy
+                "MaxMinThermometer":28/19
             },{
                 "name": "Sydney",
-                "temperature": 18,
-                "gender": 2,
-                "weather": 86
+                "temperature": 31,
+                 "humidity": 36%,
+                "weather": cloudy
+               "MaxMinThermometer":33/25
             },{
                 "name": "Brisbane",
-                "temperature": 26,
-                "humidity": 1,
-                "weather": 90
+                "temperature": 30,
+                "humidity": 25%,
+                "weather": sunny
+                "MaxMinThermometer":32/20
             },{
                 "name": "Canberra",
                 "temperature": 30,
-                "humidity": 1,
-                "weather": 52
+                "humidity": 17%,
+                "weather": sunny
+               "MaxMinThermometer"21/26
             }]
         }
