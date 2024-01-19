@@ -4,7 +4,7 @@
                 "temperature": 25,
                 "humidity": "20%",
                 "weather": "cloudy",
-                "MaxMinThermometer" : "2819"
+                "MaxMinThermometer" : "28/19"
             },{
                 "name": "Sydney",
                 "temperature": 31,
