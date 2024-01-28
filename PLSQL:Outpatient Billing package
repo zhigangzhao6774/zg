@@ -1,0 +1,296 @@
+create or replace package wxgh.ps_appreg_wx is
+
+  -- Author: Zhigang Zhao
+  -- Created: 2019/12/4 18:17:10
+  -- Purpose: Outpatient Billing Interface
+
+  -- 3.1 Patient Information Binding 003
+  procedure patInfoBind003(as_xmlParm in varchar2,
+                           aCur_temp  out sys_refcursor,
+                           on_return  out number,
+                           on_message out varchar2);
+
+  -- 3.2 Patient Information Unbinding 001
+  procedure patInfoUnbind001(as_xmlParm in varchar2,
+                             aCur_temp  out sys_refcursor,
+                             on_return  out number,
+                             on_message out varchar2);
+
+  -- 3.3 Patient Information Update 001
+  procedure patInfoUpd001(as_xmlParm in varchar2,
+                          aCur_temp  out sys_refcursor,
+                          on_return  out number,
+                          on_message out varchar2);
+
+  -- 4.1.1 Department Registration Information Query Interface 001
+  procedure getDeptRegInfo001(hospitalId in varchar2, -- (Mandatory) Hospital ID
+                              deptId     in varchar2, -- Department code, if empty, information of all departments is obtained
+                              beginDate  in varchar2, -- (Mandatory) Registration start date, format: YYYY-MM-DD
+                              endDate    in varchar2, -- (Mandatory) Registration end date, format: YYYY-MM-DD
+                              aCur_temp  out sys_refcursor);
+
+  -- 4.1.2 Doctor Registration Shift Information Query Interface 001
+  procedure getDrRegScheduleInfo001(hospitalId in varchar2, -- (Mandatory) Hospital ID
+                                    deptId     in varchar2, -- (Mandatory) Department code (primary)
+                                    doctorId   in varchar2, -- Doctor code
+                                    beginDate  in varchar2, -- (Mandatory) Source start date, format: YYYY-MM-DD
+                                    endDate    in varchar2, -- (Mandatory) Source end date, format: YYYY-MM-DD
+                                    aCur_temp  out sys_refcursor);
+
+  -- 4.1.3 Doctor Registration Time-slot Information Query Interface 001
+  procedure getDrRegTimeInfo001(hospitalId   in varchar2, -- (Mandatory) Hospital ID
+                                deptId       in varchar2, -- (Mandatory) Department code (primary)
+                                doctorName   in varchar2, -- Doctor
+                                scheduleType in varchar2, -- Period
+                                regDate      in varchar2, -- (Mandatory) Scheduling date, format: YYYY-MM-DD
+                                aCur_temp    out sys_refcursor);
+
+  -- 4.1.4 Suspension of Medical Service Notification Query Interface 001
+  procedure getStopShift001(hospitalId     in varchar2, -- (Mandatory) Hospital ID
+                            queryBeginTime in varchar2, -- (Mandatory) Query start time, format: YYYY-MM-DD hh24:mi:ss
+                            queryEndTime   in varchar2, -- (Mandatory) Query end time, format: YYYY-MM-DD hh24:mi:ss
+                            aCur_temp      out sys_refcursor);
+
+  -- 4.2.1 Appointment Registration Order Generation Interface 001
+  procedure addPreRegOrder001(axmlparm   in varchar2,
+                              aCur_temp  out sys_refcursor,
+                              on_return  out number, -- Result code
+                              on_message out varchar2 -- Result description
+                              );
+
+  -- 4.2.2 Appointment Registration Order Cancellation Interface 001
+  procedure cancelPreRegOrder001(axmlparm   in varchar2,
+                                 aCur_temp  out sys_refcursor,
+                                 on_return  out number, -- Result code
+                                 on_message out varchar2 -- Result description
+                                 );
+
+  -- 4.2.3 Appointment Registration Order Payment Interface 001
+  procedure payPreRegOrder001(axmlparm   in varchar2,
+                              aCur_temp  out sys_refcursor,
+                              on_return  out number, -- Result code
+                              on_message out varchar2 -- Result description
+                              );
+
+  -- 4.2.4 Appointment Registration Order Refund Interface 001
+  procedure refundPreReg001(axmlparm   in varchar2,
+                            aCur_temp  out sys_refcursor,
+                            on_return  out number, -- Result code
+                            on_message out varchar2 -- Result description
+                            );
+
+  --4.2.5 Refund Rewriting
+  procedure returnRefundNo001(axmlparm   in varchar2,
+                              aCur_temp  out sys_refcursor,
+                              on_return  out number, -- Result code
+                              on_message out varchar2 -- Result description
+                              );
+
+  -- 4.3.1 Same-day Registration Source Locking Interface 001
+    procedure lockRegSeqToday001(axmlparm   in varchar2,
+                               aCur_temp  out sys_refcursor,
+                               on_return  out number, -- Result code
+                               on_message out varchar2 -- Result description
+                               );
+
+  -- 4.3.2 Same-day Registration Source Unlocking Interface 001
+  procedure unlockRegSeqToday001(hospitalId in varchar2, -- (Mandatory) Hospital ID
+                                 isZJ       in varchar2, -- Whether it is an additional number in the clinic (Y-Yes, N-No, default is N)
+                                 lockId     in varchar2, -- (Mandatory) Source lock ID (generated by the channel)
+                                 on_return  out number, -- Result code
+                                 on_message out varchar2 -- Result description
+                                 );
+
+  -- 4.3.3 Same-day Registration Interface 001
+  procedure addRegOrder001(axmlparm   in varchar2,
+                           aCur_temp  out sys_refcursor,
+                           on_return  out number, -- Result code
+                           on_message out varchar2 -- Result description
+                           );
+
+  -- 5.1.1 Unpaid Medical Visit Record Query Interface 001
+  procedure getNoPayVisitInfo001(hospitalId in varchar2, -- Hospital ID
+                                 patId      in varchar2, -- Patient main index id
+                                 opPatId    in varchar2, -- Outpatient patient id
+                                 patMedType in varchar2, -- Patient medical card type
+                                 patMedNo   in varchar2, -- Patient medical card number
+                                 beginDate  in varchar2, -- Query start date, format: YYYY-MM-DD
+                                 endDate    in varchar2, -- Query end date, format: YYYY-MM-DD
+                                 aCur_temp  out sys_refcursor);
+
+  -- 5.1.2 Unpaid Detail Record Query Interface 001
+  procedure getNoPayDetailInfo001(hospitalId in varchar2, -- (Mandatory) Hospital ID
+                                  patId      in varchar2, -- Patient main index id
+                                  opPatId    in varchar2, -- Outpatient patient id
+                                  visitId    in varchar2, -- (Mandatory) HIS visit serial number
+                                  deptId     in varchar2,
+                                  doctorId   in varchar2,
+                                  aCur_temp  out sys_refcursor);
+
+  -- 5.1.3 Unpaid Record Payment Interface 001
+  procedure payChgOrder001(as_xmlParm in varchar2,
+                           aCur_temp  out sys_refcursor,
+                           on_return  out number, -- Result code
+                           on_message out varchar2 -- Result description
+                           );
+
+  -- 5.1.4 Paid Record Query Interface 001
+  procedure getPayReceiptInfo001(patMedNo  in varchar2, -- Patient medical card number
+                                 beginDate in varchar2, -- Query start date, format: YYYY-MM-DD
+                                 endDate   in varchar2, -- Query end date, format: YYYY-MM-DD
+                                 aCur_temp out sys_refcursor);
+
+  -- 5.1.5 Paid Record Detail Query Interface 001
+  procedure getPayDetailInfo001(visitId   in varchar2, -- (Mandatory) HIS visit serial number
+                                aCur_temp out sys_refcursor);
+
+  -- 5.2.1 Exceptional Order Refund Application 001
+  procedure applyRefund001(hospitalId   in varchar2, -- (Mandatory) Hospital ID
+                           busType      in varchar2, -- (Mandatory) Business type (YYGH-Appointment registration payment, DBGH-On-duty registration payment, MZJF-Outpatient payment, ZYYJ-Inpatient deposit payment)
+                           orderPayId   in varchar2, -- WeChat, Alipay merchant generated transaction serial number
+                           orderId      in varchar2, -- Third-party platform generated order ID
+                           payTime      in varchar2, -- Transaction time
+                           refundAmount in varchar2, -- Refund amount
+                           aCur_temp    out sys_refcursor);
+
+  -- 6.1.1 Laboratory Report List Query 001
+  procedure getLisReportList001(hospitalId in varchar2, -- (Mandatory) Hospital ID
+                                patMedNo   in varchar2, -- Patient medical card number
+                                beginDate  in varchar2, -- Query start date, format: YYYY-MM-DD
+                                endDate    in varchar2, -- Query end date, format: YYYY-MM-DD
+                                aCur_temp  out sys_refcursor);
+
+  -- 6.1.2 Laboratory Report Detail Query 002
+  procedure getLisReportDetail002(hospitalId in varchar2, -- (Mandatory) Hospital ID
+                                  reportId   in varchar2, -- Laboratory report id
+                                  aCur_temp  out sys_refcursor);
+
+  -- 6.2.3 Examination Report List Query 002
+
+  procedure getPacsReportList002(hospitalId in varchar2, -- (Mandatory) Hospital ID
+                                 patMedNo   in varchar2, -- Patient medical card number
+                                 beginDate  in varchar2, -- Query start date, format: YYYY-MM-DD
+                                 endDate    in varchar2, -- Query end date, format: YYYY-MM-DD
+                                 aCur_temp  out sys_refcursor);
+
+  -- Patient Record Creation 002                             
+  procedure newCard002(as_xmlParm in varchar2,
+                       aCur_temp  out sys_refcursor,
+                       on_return  out number,
+                       on_message out varchar2);
+
+  -- Outpatient Queuing Information Query Interface 001
+  procedure getOpQueuingInfo001(patMedNo  in varchar2,
+                                aCur_temp out sys_refcursor);
+
+  -- Inpatient Basic Information Query Interface 001              
+  procedure getIpPatientInfo002(as_xmlParm in varchar2,
+                                aCur_temp  out sys_refcursor,
+                                on_return  out number,
+                                on_message out varchar2);
+
+  -- Inpatient Deposit Detail Query Interface 001             
+  procedure getIpDepositDetail002(as_xmlParm in varchar2,
+                                  aCur_temp  out sys_refcursor,
+                                  on_return  out number,
+                                  on_message out varchar2);
+
+  -- Current Inpatient Expense Query Interface 002             
+  procedure getIpChgInfo001(as_xmlParm in varchar2,
+                            aCur_temp  out sys_refcursor,
+                            on_return  out number,
+                            on_message out varchar2);
+
+  -- Inpatient Daily Bill Expense Category Summary Query Interface 001             
+  procedure getIpDayExpenseItemTotal002(as_xmlParm in varchar2,
+                                        aCur_temp  out sys_refcursor,
+                                        on_return  out number,
+                                        on_message out varchar2);
+
+  -- Inpatient Deposit Payment Interface 001  
+  procedure payIpDeposit002(as_xmlParm in varchar2,
+                            aCur_temp  out sys_refcursor,
+                            on_return  out number,
+                            on_message out varchar2);
+
+  -- Hospital Insurance Drug Comparison Interface
+  procedure getPriceVsInsurDict(pageSize    in number, -- Number of rows per page
+                                currentPage in number, -- Current page number
+                                aCur_temp   out sys_refcursor);
+
+  -- Query for registration records without a set scan URL                        
+  procedure getNoSetQrCode(beginDate in varchar2,
+                           endDate   in varchar2,
+                           aCur_temp out sys_refcursor);
+
+  -- Set scan URL for registration records by Visit ID          
+  procedure setQrCodeByVisitId(as_xmlParm in varchar2,
+                               aCur_temp  out sys_refcursor,
+                               on_return  out number,
+                               on_message out varchar2);
+
+  -- National Electronic Health Card Binding
+  procedure countryEleHCNoBind001(as_xmlParm in varchar2,
+                                  aCur_temp  out sys_refcursor,
+                                  on_return  out number,
+                                  on_message out varchar2);
+
+  -- National Electronic Health Card Query
+  procedure countryEleHCNoInfo001(patIdCard in varchar2,
+                                  patMedNo  in varchar2,
+                                  eleHCNo   in varchar2,
+                                  aCur_temp out sys_refcursor);
+
+  -- Nucleic Acid Testing Item Query
+  procedure getHsjcItem001(as_xmlParm in varchar2,
+                           aCur_temp  out sys_refcursor,
+                           on_return  out number,
+                           on_message out varchar2);
+
+  -- Nucleic Acid Testing Self-Registration
+  procedure selfRegHsjc001(as_xmlParm in varchar2,
+                           aCur_temp  out sys_refcursor,
+                           on_return  out number,
+                           on_message out varchar2);
+
+  -- Retrieve Tag Value from XML String
+  function of_get_xmlval(as_xml_string in varchar2,
+                         as_xml_mark   in varchar2) return varchar2;
+
+  -- Patient Registration Rules
+  -- 1. Males are not allowed to register for gynecology and obstetrics.
+  -- 2. Patients over 14 years old (inclusive) are not allowed to register for pediatrics.
+                          clinicLabel in varchar2,
+                          timeDesc    in varchar2,
+                          regDate     in date) return varchar2;
+
+  -- 5.1.8 Query for Unpaid Medical Insurance Prescription Information
+  procedure getWaitPayMedInsInfo001(hospitalId in varchar2, -- Hospital ID
+                                    visitId    in varchar2, -- Visit serial number
+                                    aCur_temp  out sys_refcursor);
+
+  procedure PRO_OUTPBILL_TJ_INSERT(v_xml_string in varchar2,
+                                   aCur_temp    out sys_refcursor,
+                                   on_return    OUT number,
+                                   on_message   OUT varchar2);
+
+  procedure PRO_OUTPBILL_INSUR_upload(v_xml_string in clob,
+                                      aCur_temp    out sys_refcursor,
+                                      on_return    OUT number,
+                                      on_message   OUT varchar2);
+
+  -- Physical Examination Refund Interface, applicable for nucleic acid testing appointment refund             
+  procedure pro_outpbill_Tj_Ref(v_xml_string in varchar2,
+                                aCur_temp    out sys_refcursor,
+                                on_return    out number, -- Result code
+                                on_message   out varchar2 -- Result description
+                                );
+
+  -- New Test 1
+  procedure PRO_OUTPBILL_TJ_INSERT1(v_xml_string in varchar2,
+                                    aCur_temp    out sys_refcursor,
+                                    on_return    OUT number,
+                                    on_message   OUT varchar2);
+
+end ps_appreg_wx;
+
