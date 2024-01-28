@@ -3,7 +3,7 @@ create or replace package wxgh.ps_appreg_wx is
   -- Author: Zhigang Zhao
   -- Created: 2019/12/4 18:17:10
   -- Purpose: Outpatient Billing Interface
-
+ 
   -- 3.1 Patient Information Binding 003
   procedure patInfoBind003(as_xmlParm in varchar2,
                            aCur_temp  out sys_refcursor,
